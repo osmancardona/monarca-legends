@@ -1165,15 +1165,15 @@ class LoginWindow:
         def on_pc(_e):
             win.destroy()
             self.close()
-            webbrowser.open("https://www.youtube.com/")
+            webbrowser.open("https://monarcaponchado.netlify.app/")
         def on_mv(_e):
             win.destroy()
             self.close()
-            webbrowser.open("https://www.facebook.com/")
+            webbrowser.open("https://monarcatech-movil.netlify.app/")
         def on_tr(_e):
             win.destroy()
             self.close()
-            webbrowser.open("https://www.tiktok.com/es-419/")
+            webbrowser.open("https://monarcatech-tutoriales.netlify.app/")
 
         cv.tag_bind(pc_body, "<Button-1>", on_pc)
         cv.tag_bind(pc_lbl, "<Button-1>", on_pc)
