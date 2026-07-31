@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MONARCA - Loading</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0a0a;
+    color: #c0c0c0;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    width: 480px;
+    height: 320px;
+    overflow: hidden;
+    padding: 20px;
+    position: relative;
+  }
+  canvas {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .content { position: relative; z-index: 1; }
+  #logo {
+    position: static;
+    width: auto; height: auto;
+    display: block;
+    margin-bottom: 16px;
+  }
+  .subtitle {
+    color: #9900ff;
+    font-size: 12px;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+  }
+  .log-line { color: #d0d0d0; margin: 4px 0; min-height: 1em; }
+  .log-line.success { color: #9900ff; }
+  .cursor {
+    display: inline-block;
+    width: 8px;
+    height: 14px;
+    background: #9900ff;
+    animation: blink 1s step-end infinite;
+    vertical-align: middle;
+    margin-left: 2px;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+</style>
+</head>
+<body>
+  <canvas id="bg"></canvas>
+  <div class="content">
+    <canvas id="logo"></canvas>
+    <div class="subtitle">&#8811; MONARCA - THE BEST IN THE WORLD &#8810;</div>
+    <div id="logs"></div>
+  </div>
+
+  <script>
+    const GLYPHS = {
+      M: ["1...1","11.11","1.1.1","1...1","1...1","1...1","1...1"],
+      O: [".111.","1...1","1...1","1...1","1...1","1...1",".111."],
+      N: ["1...1","11..1","1.1.1","1..11","1...1","1...1","1...1"],
+      A: [".111.","1...1","1...1","11111","1...1","1...1","1...1"],
+      R: ["1111.","1...1","1...1","1111.","1.1..","1..1.","1...1"],
+      C: [".111.","1...1","1....","1....","1....","1...1",".111."],
+    };
+
+    (function drawLogo() {
+      const word = "MONARCA", px = 6, gap = 1, sp = 2;
+      const cols = word.length * 5 + (word.length - 1) * sp;
+      const lg = document.getElementById('logo');
+      lg.width = cols * (px + gap);
+      lg.height = 7 * (px + gap);
+      const g = lg.getContext('2d');
+      let ox = 0;
+      for (const ch of word) {
+        const rows = GLYPHS[ch];
+        rows.forEach((row, y) => {
+          [...row].forEach((c, x) => {
+            if (c !== '1') return;
+            const X = (ox + x) * (px + gap), Y = y * (px + gap);
+            g.fillStyle = '#3a1a6a';
+            g.fillRect(X + 2, Y + 2, px, px);
+            g.fillStyle = '#a855f7';
+            g.fillRect(X, Y, px, px);
+          });
+        });
+        ox += 5 + sp;
+      }
+    })();
+
+    const canvas = document.getElementById('bg');
+    const ctx = canvas.getContext('2d');
+    canvas.width = 480; canvas.height = 320;
+
+    const crowns = Array.from({length: 18}, () => ({
+      x: Math.random() * 480,
+      y: Math.random() * 320,
+      speed: 0.3 + Math.random() * 0.5,
+      size: 10 + Math.random() * 8,
+      opacity: 0.06 + Math.random() * 0.07
+    }));
+
+    (function drawCrowns() {
+      ctx.clearRect(0, 0, 480, 320);
+      crowns.forEach(c => {
+        ctx.font = `${c.size}px serif`;
+        ctx.fillStyle = `rgba(153,0,255,${c.opacity})`;
+        ctx.fillText('♛', c.x, c.y);
+        c.y += c.speed;
+        if (c.y > 330) { c.y = -20; c.x = Math.random() * 480; }
+      });
+      requestAnimationFrame(drawCrowns);
+    })();
+
+    const lines = [
+      { text: '[+] Checking Update', success: false },
+      { text: '[+] Emulator Detected', success: false },
+      { text: '[+] Updated Codes', success: false },
+      { text: '[+] Injection Process', success: false },
+      { text: '', success: false },
+      { text: '[+] Success', success: true },
+    ];
+
+    const container = document.getElementById('logs');
+    let lineIdx = 0;
+
+    function typeLine(line, callback) {
+      const div = document.createElement('div');
+      div.className = 'log-line' + (line.success ? ' success' : '');
+      container.appendChild(div);
+      let i = 0;
+      (function next() {
+        if (i < line.text.length) { div.textContent += line.text[i++]; setTimeout(next, 40); }
+        else callback();
+      })();
+    }
+
+    function showNext() {
+      if (lineIdx >= lines.length) {
+        const cursor = document.createElement('span');
+        cursor.className = 'cursor';
+        container.lastChild.appendChild(cursor);
+        return;
+      }
+      const line = lines[lineIdx++];
+      if (!line.text) {
+        container.appendChild(Object.assign(document.createElement('div'), {className: 'log-line'}));
+        return setTimeout(showNext, 200);
+      }
+      typeLine(line, () => setTimeout(showNext, 300));
+    }
+
+    setTimeout(showNext, 400);
+  </script>
+</body>
+</html>
