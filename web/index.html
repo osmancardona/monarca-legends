@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monarca Tech | Ponchado de Red</title>
+<meta name="theme-color" content="#a855f7">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/favicon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Monarca Tech">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============ BASE (MOBILE-FIRST) ============ */
+:root{
+  --bg:#070b14;
+  --bg2:#0b1220;
+  --card:#0f172a;
+  --border:#1e293b;
+  --cyan:#22d3ee;
+  --blue:#3b82f6;
+  --purple:#8b5cf6;
+  --green:#34d399;
+  --text:#e2e8f0;
+  --muted:#64748b;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:'Rajdhani',sans-serif;
+  overflow-x:hidden;
+  -webkit-tap-highlight-color:transparent;
+}
+h1,h2,h3,h4{font-family:'Orbitron',sans-serif;font-weight:700}
+::selection{background:var(--cyan);color:#000}
+img{max-width:100%}
+
+/* ============ FONDO ============ */
+.bg-grid{
+  position:fixed;inset:0;z-index:-2;
+  background-image:
+    linear-gradient(rgba(34,211,238,.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(34,211,238,.05) 1px,transparent 1px);
+  background-size:40px 40px;
+}
+.bg-glow{position:fixed;z-index:-1;border-radius:50%;filter:blur(100px);opacity:.2}
+.glow1{width:350px;height:350px;background:var(--blue);top:-100px;left:-80px}
+.glow2{width:300px;height:300px;background:var(--purple);bottom:-100px;right:-80px}
+
+/* ============ BARRA PROGRESO ============ */
+.progress-bar{
+  position:fixed;top:0;left:0;height:3px;width:0;z-index:200;
+  background:linear-gradient(90deg,var(--cyan),var(--purple));
+}
+
+/* ============ NAVBAR ============ */
+nav{
+  position:fixed;top:0;left:0;width:100%;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 5%;
+  background:rgba(7,11,20,.85);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);
+}
+.logo{
+  display:flex;align-items:center;gap:10px;
+  font-family:'Orbitron';font-weight:900;font-size:1.1rem;color:#fff;text-decoration:none;
+}
+.logo-icon{
+  width:38px;height:38px;border-radius:10px;
+  background:linear-gradient(135deg,var(--cyan),var(--blue));
+  display:flex;align-items:center;justify-content:center;font-size:1.2rem;
+  box-shadow:0 0 15px rgba(34,211,238,.4);
+}
+/* Menú hamburguesa */
+.menu-btn{
+  width:44px;height:44px;border:none;border-radius:10px;cursor:pointer;
+  background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.3);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+}
+.menu-btn span{
+  display:block;width:22px;height:2.5px;border-radius:2px;background:var(--cyan);
+  transition:.3s;
+}
+.menu-btn.open span:nth-child(1){transform:translateY(7.5px) rotate(45deg)}
+.menu-btn.open span:nth-child(2){opacity:0}
+.menu-btn.open span:nth-child(3){transform:translateY(-7.5px) rotate(-45deg)}
+#mobileMenu{
+  position:fixed;top:0;right:-100%;width:75%;max-width:320px;height:100vh;z-index:99;
+  background:rgba(11,18,32,.98);backdrop-filter:blur(20px);
+  border-left:1px solid var(--border);
+  display:flex;flex-direction:column;gap:8px;padding:90px 25px 25px;
+  transition:right .35s ease;
+}
+#mobileMenu.open{right:0}
+#mobileMenu a{
+  color:var(--muted);text-decoration:none;font-weight:600;font-size:1.15rem;
+  padding:14px 12px;border-radius:10px;transition:.3s;
+  display:flex;align-items:center;gap:12px;
+}
+#mobileMenu a:hover,#mobileMenu a.active{color:var(--cyan);background:rgba(34,211,238,.08)}
+#mobileMenu a.btn-wa{
+  background:linear-gradient(135deg,var(--cyan),var(--blue));color:#000;
+  justify-content:center;font-weight:700;margin-top:15px;
+}
+.menu-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:98;
+  opacity:0;visibility:hidden;transition:.35s;
+}
+.menu-overlay.show{opacity:1;visibility:visible}
+
+/* ============ HERO ============ */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:110px 6% 60px}
+.badge{
+  display:inline-flex;align-items:center;gap:8px;align-self:flex-start;
+  padding:7px 14px;border-radius:50px;font-size:.8rem;font-weight:600;
+  background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.3);
+  color:var(--cyan);letter-spacing:.5px;margin-bottom:20px;
+}
+.badge .dot{width:7px;height:7px;border-radius:50%;background:var(--cyan);animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.hero h1{
+  font-size:2.3rem;line-height:1.15;color:#fff;margin-bottom:16px;
+}
+.hero h1 .grad{
+  background:linear-gradient(90deg,var(--cyan),var(--blue),var(--purple),var(--cyan));
+  background-size:300% 100%;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:gradMove 5s linear infinite;
+}
+@keyframes gradMove{to{background-position:300% 0}}
+.hero p{font-size:1.1rem;color:var(--muted);line-height:1.6;margin-bottom:30px;min-height:60px}
+.hero p .typed{color:var(--cyan);border-right:3px solid var(--cyan);animation:blinkCursor .8s step-end infinite}
+@keyframes blinkCursor{50%{border-color:transparent}}
+.hero-cta{display:flex;flex-direction:column;gap:14px}
+.btn{
+  display:block;text-align:center;padding:16px;border-radius:12px;
+  font-size:1.15rem;font-weight:700;text-decoration:none;transition:.2s;
+  font-family:'Rajdhani',sans-serif;letter-spacing:.5px;
+}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:linear-gradient(135deg,var(--cyan),var(--blue));color:#000;box-shadow:0 5px 25px rgba(34,211,238,.4)}
+.btn-outline{border:2px solid var(--border);color:var(--text)}
+.btn-outline:active{border-color:var(--cyan);color:var(--cyan)}
+.stats{
+  display:flex;justify-content:space-between;gap:10px;margin-top:40px;
+  padding:18px;border-radius:14px;
+  background:rgba(15,23,42,.6);border:1px solid var(--border);
+}
+.stat{flex:1;text-align:center}
+.stat h3{font-size:1.4rem;color:var(--cyan)}
+.stat p{font-size:.78rem;color:var(--muted);margin-top:2px;min-height:0}
+
+/* ============ SECCIONES ============ */
+section{padding:70px 6%}
+.section-title{text-align:center;margin-bottom:40px}
+.section-title .tag{color:var(--cyan);font-weight:600;letter-spacing:2px;font-size:.8rem;text-transform:uppercase}
+.section-title h2{font-size:1.8rem;color:#fff;margin-top:8px}
+.section-title p{color:var(--muted);margin-top:10px;font-size:1rem}
+
+/* ============ SERVICIOS ============ */
+.grid{display:flex;flex-direction:column;gap:16px}
+.card{
+  position:relative;padding:22px;border-radius:16px;
+  background:linear-gradient(160deg,var(--card),var(--bg2));
+  border:1px solid var(--border);
+  display:flex;gap:16px;align-items:center;
+  transition:.3s;opacity:0;transform:translateY(30px);
+}
+.card.visible{opacity:1;transform:translateY(0)}
+.card:active{transform:scale(.99);border-color:rgba(34,211,238,.4)}
+.card-icon{
+  flex-shrink:0;width:52px;height:52px;border-radius:13px;
+  display:flex;align-items:center;justify-content:center;font-size:1.5rem;
+  background:rgba(34,211,238,.1);
+}
+.card h3{font-size:1.05rem;color:#fff;margin-bottom:5px}
+.card p{color:var(--muted);font-size:.9rem;line-height:1.5}
+
+/* ============ PROCESO ============ */
+.timeline{display:flex;flex-direction:column;gap:12px}
+.step{
+  display:flex;gap:16px;align-items:center;padding:18px;
+  border-radius:14px;background:var(--card);border:1px solid var(--border);
+  opacity:0;transform:translateX(-25px);transition:.4s;
+}
+.step.visible{opacity:1;transform:translateX(0)}
+.step-num{
+  flex-shrink:0;width:48px;height:48px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Orbitron';font-weight:900;font-size:1.2rem;
+  background:linear-gradient(135deg,var(--cyan),var(--blue));color:#000;
+  box-shadow:0 0 15px rgba(34,211,238,.4);
+}
+.step h3{color:#fff;font-size:1rem;margin-bottom:4px}
+.step p{color:var(--muted);font-size:.88rem;line-height:1.5}
+
+/* ============ TIPOS DE PONCHADO ============ */
+.types{display:flex;flex-direction:column;gap:16px}
+.type-card{
+  padding:22px;border-radius:16px;
+  background:linear-gradient(160deg,var(--card),var(--bg2));
+  border:1px solid var(--border);
+  opacity:0;transform:translateY(25px);transition:.4s;
+}
+.type-card.visible{opacity:1;transform:translateY(0)}
+.pin-grid{display:grid;grid-template-columns:repeat(2,8px);grid-template-rows:repeat(4,8px);gap:4px;width:40px;margin-bottom:14px}
+.pin{width:8px;height:8px;border-radius:2px;background:var(--cyan);box-shadow:0 0 6px var(--cyan)}
+.type-card:nth-child(2) .pin{background:var(--purple);box-shadow:0 0 6px var(--purple)}
+.type-card:nth-child(3) .pin{background:var(--green);box-shadow:0 0 6px var(--green)}
+.type-card:nth-child(4) .pin{background:#f59e0b;box-shadow:0 0 6px #f59e0b}
+.type-card h3{color:#fff;font-size:1.15rem;margin-bottom:8px}
+.type-card p{color:var(--muted);line-height:1.6;font-size:.95rem}
+.pins-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.pin-chip{padding:4px 10px;border-radius:5px;font-size:.75rem;font-weight:700;
+  background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.3);color:var(--cyan)}
+.type-card:nth-child(2) .pin-chip{background:rgba(139,92,246,.1);border-color:rgba(139,92,246,.3);color:#a78bfa}
+.type-card:nth-child(3) .pin-chip{background:rgba(52,211,153,.1);border-color:rgba(52,211,153,.3);color:#34d399}
+.type-card:nth-child(4) .pin-chip{background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.3);color:#fbbf24}
+
+/* ============ VIDEOS ============ */
+.videos-grid{display:flex;flex-direction:column;gap:20px}
+.video-card{
+  border-radius:16px;overflow:hidden;
+  background:linear-gradient(160deg,var(--card),var(--bg2));
+  border:1px solid var(--border);
+  opacity:0;transform:translateY(25px);transition:.4s;
+}
+.video-card.visible{opacity:1;transform:translateY(0)}
+.video-frame{position:relative;padding-top:56.25%;background:#000;overflow:hidden}
+.video-frame iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0}
+.video-thumb{position:absolute;top:0;left:0;width:100%;height:100%;cursor:pointer;
+  display:flex;align-items:center;justify-content:center}
+.video-thumb img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;filter:brightness(.7)}
+.video-thumb:active img{filter:brightness(1)}
+.play-btn{position:relative;z-index:2;width:62px;height:62px;border-radius:50%;
+  background:rgba(255,0,0,.9);color:#fff;display:flex;align-items:center;justify-content:center;
+  font-size:1.6rem;padding-left:5px;box-shadow:0 10px 30px rgba(255,0,0,.4)}
+.video-info{padding:16px}
+.video-tag{display:inline-block;margin-bottom:8px;padding:3px 10px;border-radius:5px;
+  font-size:.7rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.3);color:var(--cyan)}
+.video-card:nth-child(2) .video-tag{background:rgba(139,92,246,.1);border-color:rgba(139,92,246,.3);color:#a78bfa}
+.video-card:nth-child(3) .video-tag{background:rgba(52,211,153,.1);border-color:rgba(52,211,153,.3);color:#34d399}
+.video-card:nth-child(4) .video-tag{background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.3);color:#fbbf24}
+.video-info h3{color:#fff;font-size:1rem;margin-bottom:5px}
+.video-info p{color:var(--muted);font-size:.85rem;line-height:1.5}
+
+/* ============ PRECIOS ============ */
+.pricing-grid{display:flex;flex-direction:column;gap:18px}
+.price-card{
+  position:relative;padding:26px 22px;border-radius:16px;
+  background:linear-gradient(160deg,var(--card),var(--bg2));border:1px solid var(--border);
+  opacity:0;transform:translateY(25px);transition:.4s;
+}
+.price-card.visible{opacity:1;transform:translateY(0)}
+.price-card.featured{
+  border:2px solid transparent;
+  background:linear-gradient(160deg,var(--card),var(--bg2)) padding-box,
+    linear-gradient(135deg,var(--cyan),var(--purple)) border-box;
+}
+.featured-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+  padding:5px 16px;border-radius:30px;font-weight:700;font-size:.75rem;letter-spacing:1px;
+  background:linear-gradient(90deg,var(--cyan),var(--purple));color:#000;white-space:nowrap;
+  box-shadow:0 5px 15px rgba(34,211,238,.4)}
+.price-card .plan{font-family:'Orbitron';color:var(--muted);letter-spacing:2px;text-transform:uppercase;font-size:.78rem}
+.price-card .price{font-family:'Orbitron';font-size:2.4rem;font-weight:900;color:#fff;margin:10px 0 4px}
+.price-card .price span{font-size:.9rem;color:var(--muted);font-weight:500}
+.price-card .desc{color:var(--muted);margin-bottom:16px;font-size:.95rem}
+.price-card ul{list-style:none;margin-bottom:20px}
+.price-card ul li{padding:8px 0;color:var(--text);font-size:.95rem;border-bottom:1px dashed var(--border);display:flex;gap:8px}
+.price-card ul li::before{content:'✔';color:var(--green);font-weight:700}
+.price-card ul li.off{color:var(--muted);text-decoration:line-through}
+.price-card ul li.off::before{content:'✖';color:#f87171}
+.price-btn{display:block;text-align:center;padding:13px;border-radius:10px;text-decoration:none;
+  font-weight:700;font-size:1.05rem;background:linear-gradient(135deg,var(--cyan),var(--blue));color:#000}
+.price-btn:active{transform:scale(.97)}
+
+/* ============ FAQ ============ */
+.faq-wrap{display:flex;flex-direction:column;gap:12px}
+.faq-item{border-radius:14px;overflow:hidden;
+  background:linear-gradient(160deg,var(--card),var(--bg2));border:1px solid var(--border);
+  opacity:0;transform:translateY(15px);transition:.3s}
+.faq-item.visible{opacity:1;transform:translateY(0)}
+.faq-q{width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px;
+  padding:17px 18px;background:none;border:none;cursor:pointer;text-align:left;
+  color:var(--text);font-size:1rem;font-weight:600;font-family:'Rajdhani',sans-serif}
+.faq-icon{flex-shrink:0;width:28px;height:28px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  border:2px solid var(--cyan);color:var(--cyan);font-weight:700;transition:.35s}
+.faq-item.open .faq-icon{transform:rotate(45deg);background:var(--cyan);color:#000}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.faq-a p{padding:0 18px 18px;color:var(--muted);line-height:1.6;font-size:.93rem}
+
+/* ============ CONTACTO ============ */
+.contact{
+  text-align:center;border-radius:20px;margin:0 4% 60px;
+  background:linear-gradient(160deg,var(--card),var(--bg2));border:1px solid var(--border);padding:35px 20px;
+}
+.contact h2{font-size:1.7rem;color:#fff;margin-bottom:12px}
+.contact p{color:var(--muted);font-size:1rem;margin-bottom:25px;line-height:1.6}
+.contact .big-btn{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  padding:17px;border-radius:12px;font-size:1.1rem;font-weight:700;
+  background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;text-decoration:none;
+  box-shadow:0 10px 30px rgba(37,211,102,.3)}
+.contact-info{display:flex;flex-direction:column;gap:12px;margin-top:25px}
+.contact-info span{color:var(--muted);font-size:.95rem}
+
+/* ============ FOOTER ============ */
+footer{padding:30px 6%;border-top:1px solid var(--border);text-align:center}
+footer p{color:var(--muted);font-size:.9rem;margin-bottom:15px}
+footer .socials{display:flex;justify-content:center;gap:14px}
+footer .socials a{width:44px;height:44px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--border);color:var(--muted);text-decoration:none;font-size:1.2rem}
+
+/* ============ BOTÓN VOLVER ARRIBA ============ */
+.back-top{position:fixed;bottom:20px;right:20px;z-index:97;
+  width:48px;height:48px;border-radius:50%;border:none;cursor:pointer;
+  background:linear-gradient(135deg,var(--cyan),var(--blue));color:#000;font-size:1.2rem;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;visibility:hidden;transform:translateY(15px);transition:.35s;
+  box-shadow:0 5px 20px rgba(34,211,238,.4)}
+.back-top.show{opacity:1;visibility:visible;transform:translateY(0)}
+
+/* ============ WhatsApp flotante ============ */
+.wa-float{position:fixed;bottom:20px;left:20px;z-index:97;z-index:96;
+  width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#25d366,#128c7e);text-decoration:none;font-size:1.6rem;
+  box-shadow:0 5px 25px rgba(37,211,102,.5);animation:waPulse 2s infinite}
+@keyframes waPulse{0%,100%{box-shadow:0 5px 25px rgba(37,211,102,.4)}50%{box-shadow:0 5px 35px rgba(37,211,102,.7)}}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;scroll-behavior:auto !important}
+}
+</style>
+</head>
+<body>
+
+<!-- Barra de progreso -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- Fondo -->
+<div class="bg-grid"></div>
+<div class="bg-glow glow1"></div>
+<div class="bg-glow glow2"></div>
+
+<!-- NAVBAR -->
+<nav>
+  <a href="#" class="logo">
+    <div class="logo-icon">⚡</div>
+    Monarca<span style="color:var(--cyan)">Tech</span>
+  </a>
+  <button class="menu-btn" id="menuBtn" aria-label="Abrir menú">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MENÚ MÓVIL -->
+<div class="menu-overlay" id="menuOverlay"></div>
+<div id="mobileMenu">
+  <a href="#servicios">🔌 Servicios</a>
+  <a href="#proceso">⚙️ Proceso</a>
+  <a href="#videos">🎥 Videos</a>
+  <a href="#precios">💰 Precios</a>
+  <a href="#faq">❓ FAQ</a>
+  <a href="https://wa.me/0000000000" class="btn-wa">💬 Contactar</a>
+</div>
+
+<!-- HERO -->
+<header class="hero">
+  <span class="badge"><span class="dot"></span> PONCHADO · CABLEADO · RED</span>
+  <h1>Ponchado <span class="grad">Profesional</span><br>de Cables de Red</h1>
+  <p><span class="typed" id="typedText"></span></p>
+  <div class="hero-cta">
+    <a href="https://wa.me/0000000000" class="btn btn-primary">💬 Cotizar por WhatsApp</a>
+    <a href="#servicios" class="btn btn-outline">Ver servicios</a>
+  </div>
+  <div class="stats">
+    <div class="stat"><h3 data-count="500">+500</h3><p>Cables ponchados</p></div>
+    <div class="stat"><h3 data-count="100">100%</h3><p>Garantizado</p></div>
+    <div class="stat"><h3 data-count="24">24/7</h3><p>Soporte</p></div>
+  </div>
+</header>
+
+<!-- SERVICIOS -->
+<section id="servicios">
+  <div class="section-title">
+    <span class="tag">Servicios</span>
+    <h2>¿Qué hacemos?</h2>
+  </div>
+  <div class="grid">
+    <div class="card"><div class="card-icon">🔌</div><div><h3>Ponchado RJ45</h3><p>Conectores crimpados a la perfección para Cat5e y Cat6.</p></div></div>
+    <div class="card"><div class="card-icon">🧱</div><div><h3>Cableado Estructurado</h3><p>Instalación completa de redes de datos, canaletas y puntos de red.</p></div></div>
+    <div class="card"><div class="card-icon">🖥️</div><div><h3>Patch Panels</h3><p>Ponchado y organización de paneles para oficinas y servidores.</p></div></div>
+    <div class="card"><div class="card-icon">🌐</div><div><h3>Conexión de Red</h3><p>Routers, switches y puntos de acceso configurados.</p></div></div>
+    <div class="card"><div class="card-icon">🔧</div><div><h3>Reparación de Cables</h3><p>Reponchamos y reparamos conectores dañados en minutos.</p></div></div>
+    <div class="card"><div class="card-icon">🏢</div><div><h3>Instalación Empresarial</h3><p>Proyectos para oficinas, negocios y casas.</p></div></div>
+    <div class="card"><div class="card-icon">🔍</div><div><h3>Diagnóstico de Red</h3><p>Detectamos fallas con equipos de prueba profesionales.</p></div></div>
+    <div class="card"><div class="card-icon">⚡</div><div><h3>Certificación</h3><p>Verificación con tester para garantizar la velocidad.</p></div></div>
+  </div>
+</section>
+
+<!-- PROCESO -->
+<section id="proceso">
+  <div class="section-title">
+    <span class="tag">Proceso</span>
+    <h2>¿Cómo trabajamos?</h2>
+  </div>
+  <div class="timeline">
+    <div class="step"><div class="step-num">1</div><div><h3>Medición</h3><p>Calculamos la longitud exacta para cada punto.</p></div></div>
+    <div class="step"><div class="step-num">2</div><div><h3>Pelado</h3><p>Retiramos la chaqueta sin dañar los pares internos.</p></div></div>
+    <div class="step"><div class="step-num">3</div><div><h3>Orden</h3><p>Ordenamos según T568A o T568B.</p></div></div>
+    <div class="step"><div class="step-num">4</div><div><h3>Crimpado</h3><p>Presionamos el conector RJ45 con la ponchadora.</p></div></div>
+    <div class="step"><div class="step-num">5</div><div><h3>Prueba</h3><p>Verificamos continuidad y velocidad. ¡Conexión perfecta!</p></div></div>
+  </div>
+</section>
+
+<!-- TIPOS -->
+<section id="tipos">
+  <div class="section-title">
+    <span class="tag">Tipos</span>
+    <h2>Tipos de Ponchado</h2>
+  </div>
+  <div class="types">
+    <div class="type-card">
+      <div class="pin-grid"><span class="pin"></span><span class="pin"></span><span class="pin"></span><span class="pin"></span><span class="pin"></span><span class="pin"></span><span class="pin"></span><span class="pin"></span></div>
+      <h3>Directo (Straight)</h3>
+      <p>Ambos extremos iguales. Conecta PC a switches y routers.</p>
+      <div class="pins-list"><span class="pin-chip">PC ↔ Switch</span><span class="pin-chip">PC ↔ Router</span></div>
+    </div>
+    <div class="type-card">
+      <div class="pin-grid"><span class="pin"></span><span class="pin"></span><span class="pin"></span><span class="pin"></span><span class="pin"></span><span class="pin"></span><span class="pin"></span><span class="pin"></span></div>
+      <h3>Cruzado (Crossover)</h3>
+      <p>Extremos distintos. Conecta dos equipos directamente.</p>
+      <div class="pins-list"><span class="pin-chip">PC ↔ PC</span><span class="pin-chip">T568A ↔ T568B</span></div>
+    </div>
+    <div class="type-card">
+      <div class="pin-grid"><span class="pin"></span><span class="pin"></span><span class="pin"></span><span class="pin"></span><span class="pin"></span><span class="pin"></span><span class="pin"></span><span class="pin"></span></div>
+      <h3>Estándar T568A</h3>
+      <p>Blanco-Verde, Verde, Blanco-Naranja, Azul, Blanco-Azul, Naranja, Blanco-Café, Café.</p>
+      <div class="pins-list"><span class="pin-chip">Residencial</span><span class="pin-chip">Compatible T568B</span></div>
+    </div>
+    <div class="type-card">
+      <div class="pin-grid"><span class="pin"></span><span class="pin"></span><span class="pin"></span><span class="pin"></span><span class="pin"></span><span class="pin"></span><span class="pin"></span><span class="pin"></span></div>
+      <h3>Estándar T568B</h3>
+      <p>Blanco-Naranja, Naranja, Blanco-Verde, Azul, Blanco-Azul, Verde, Blanco-Café, Café.</p>
+      <div class="pins-list"><span class="pin-chip">El más usado</span><span class="pin-chip">Empresarial</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- VIDEOS -->
+<section id="videos">
+  <div class="section-title">
+    <span class="tag">Aprende</span>
+    <h2>Videos Tutoriales</h2>
+  </div>
+  <div class="videos-grid">
+    <div class="video-card">
+      <div class="video-frame"><iframe src="https://www.youtube-nocookie.com/embed/XpeKWEXw7HE" title="Cómo Ponchar Cable UTP / RJ45" loading="lazy" allowfullscreen></iframe></div>
+      <div class="video-info"><span class="video-tag">Básico</span><h3>Cómo Ponchar Cable UTP / RJ45</h3><p>Aprende paso a paso, rápido y fácil.</p></div>
+    </div>
+    <div class="video-card">
+      <div class="video-frame"><iframe src="https://www.youtube-nocookie.com/embed/8tQsUB6s4SE" title="Ponchado — Técnico en Sistemas" loading="lazy" allowfullscreen></iframe></div>
+      <div class="video-info"><span class="video-tag">Técnico</span><h3>Ponchado — Técnico en Sistemas</h3><p>Técnicas profesionales de redes.</p></div>
+    </div>
+    <div class="video-card">
+      <div class="video-frame"><iframe src="https://www.youtube-nocookie.com/embed/GeTxsZjWfl0" title="Laboratorio Virtual" loading="lazy" allowfullscreen></iframe></div>
+      <div class="video-info"><span class="video-tag">Laboratorio</span><h3>Laboratorio Virtual UTP-RJ45</h3><p>Practica el ponchado sin miedo a fallar.</p></div>
+    </div>
+    <div class="video-card">
+      <div class="video-frame"><iframe src="https://www.youtube-nocookie.com/embed/laWefp80lz4" title="¿Qué es el Cableado Estructurado?" loading="lazy" allowfullscreen></iframe></div>
+      <div class="video-info"><span class="video-tag">Conceptos</span><h3>¿Qué es el Cableado Estructurado?</h3><p>El corazón de toda instalación.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRECIOS -->
+<section id="precios">
+  <div class="section-title">
+    <span class="tag">Inversión</span>
+    <h2>Nuestros Planes</h2>
+  </div>
+  <div class="pricing-grid">
+    <div class="price-card">
+      <p class="plan">Básico</p>
+      <h3 class="price">$<span>desde</span></h3>
+      <p class="desc">Para casa o pequeña oficina.</p>
+      <ul><li>1 a 5 puntos de red</li><li>Ponchado RJ45 incluido</li><li>Canaleta instalada</li><li class="off">Patch panel</li><li class="off">Certificación</li></ul>
+      <a href="https://wa.me/0000000000" class="price-btn">Cotizar →</a>
+    </div>
+    <div class="price-card featured">
+      <span class="featured-badge">⭐ Más Popular</span>
+      <p class="plan">Profesional</p>
+      <h3 class="price">$<span>desde</span></h3>
+      <p class="desc">Para negocios medianos.</p>
+      <ul><li>6 a 20 puntos de red</li><li>Ponchado + etiquetado</li><li>Patch panel incluido</li><li>Organización de rack</li><li class="off">Certificación</li></ul>
+      <a href="https://wa.me/0000000000" class="price-btn">Cotizar →</a>
+    </div>
+    <div class="price-card">
+      <p class="plan">Empresarial</p>
+      <h3 class="price">$<span>desde</span></h3>
+      <p class="desc">Para empresas grandes.</p>
+      <ul><li>+20 puntos de red</li><li>Diseño de cableado</li><li>Patch panels y racks</li><li>Certificación</li><li>Garantía extendida</li></ul>
+      <a href="https://wa.me/0000000000" class="price-btn">Cotizar →</a>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="section-title">
+    <span class="tag">Dudas</span>
+    <h2>Preguntas Frecuentes</h2>
+  </div>
+  <div class="faq-wrap">
+    <div class="faq-item">
+      <button class="faq-q">¿Qué es el ponchado de cables?<span class="faq-icon">+</span></button>
+      <div class="faq-a"><p>Es la técnica de fijar un conector RJ45 a un cable de red. Pelar, ordenar y presionar los hilos para asegurar buen contacto. Un buen ponchado = conexión estable.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q">¿Qué herramientas necesito?<span class="faq-icon">+</span></button>
+      <div class="faq-a"><p>Ponchadora (crimpadora), conectores RJ45, cable UTP Cat5e o Cat6, pelacables y un tester de red.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q">¿T568A o T568B?<span class="faq-icon">+</span></button>
+      <div class="faq-a"><p>T568B es el más usado en empresas. T568A en residencias. Lo importante: mismo estándar en ambos extremos.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q">¿Cat5e o Cat6?<span class="faq-icon">+</span></button>
+      <div class="faq-a"><p>Cat5e soporta hasta 1 Gbps. Cat6 hasta 10 Gbps y mejor aislamiento. Para instalación nueva, Cat6 es mejor inversión.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q">¿Cuánto tarda un servicio?<span class="faq-icon">+</span></button>
+      <div class="faq-a"><p>Un ponchado toma minutos. Instalaciones completas: 1 a 3 días según tamaño.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q">¿Tienes garantía?<span class="faq-icon">+</span></button>
+      <div class="faq-a"><p>Sí. Todos nuestros trabajos incluyen garantía. Si un punto falla por nuestra instalación, lo reparamos gratis.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACTO -->
+<section id="contacto" class="contact">
+  <h2>¿Necesitas ponchado?</h2>
+  <p>Cuéntanos cuántos puntos de red necesitas y cotizamos al instante.</p>
+  <a href="https://wa.me/0000000000" class="big-btn">💬 WhatsApp — Cotización gratis</a>
+  <div class="contact-info">
+    <span>📞 +00 000 000 0000</span>
+    <span>📍 Tu ciudad, tu país</span>
+    <span>🕐 Lun–Sáb · 8am–8pm</span>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© <span id="year"></span> Monarca Tech · Cableado de red profesional</p>
+  <div class="socials">
+    <a href="#">📘</a>
+    <a href="#">📸</a>
+    <a href="#">🐦</a>
+  </div>
+</footer>
+
+<!-- WhatsApp flotante -->
+<a href="https://wa.me/0000000000" class="wa-float" aria-label="WhatsApp">💬</a>
+
+<!-- Volver arriba -->
+<button class="back-top" id="backTop" aria-label="Volver arriba">↑</button>
+
+<script>
+// ============ REGISTRO DEL SERVICE WORKER (PWA) ============
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(() => console.log('✅ Service Worker registrado (Monarca Tech PWA)'))
+      .catch((err) => console.log('Service Worker error:', err));
+  });
+}
+
+// ============ VIDEOS CLICABLES (miniatura + play) ============
+document.querySelectorAll('iframe[src*="youtube"]').forEach(frame => {
+  const container = frame.parentElement;
+  const videoId = frame.src.match(/embed\/([^?]+)/)[1];
+  container.classList.add('video-play');
+  container.innerHTML =
+    '<div class="video-thumb" role="button" tabindex="0" aria-label="Reproducir video">' +
+      '<img src="https://img.youtube.com/vi/' + videoId + '/hqdefault.jpg" alt="Miniatura" loading="lazy">' +
+      '<div class="play-btn">▶</div>' +
+    '</div>';
+  const thumb = container.querySelector('.video-thumb');
+  const loadPlayer = () => {
+    container.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + videoId + '?autoplay=1" title="Video" allow="autoplay; fullscreen" allowfullscreen></iframe>';
+  };
+  thumb.addEventListener('click', loadPlayer);
+  thumb.addEventListener('keydown', e => { if(e.key === 'Enter' || e.key === ' ') loadPlayer(); });
+});
+
+// Año
+document.getElementById('year').textContent = new Date().getFullYear();
+
+// Barra de progreso
+const progressBar = document.getElementById('progressBar');
+const updateProgress = () => {
+  const h = document.documentElement.scrollHeight - window.innerHeight;
+  progressBar.style.width = (window.scrollY / h * 100) + '%';
+};
+window.addEventListener('scroll', updateProgress, {passive:true});
+updateProgress();
+
+// Menú hamburguesa
+const menuBtn = document.getElementById('menuBtn');
+const mobileMenu = document.getElementById('mobileMenu');
+const menuOverlay = document.getElementById('menuOverlay');
+const toggleMenu = (open) => {
+  menuBtn.classList.toggle('open', open);
+  mobileMenu.classList.toggle('open', open);
+  menuOverlay.classList.toggle('show', open);
+};
+menuBtn.addEventListener('click', () => toggleMenu(!mobileMenu.classList.contains('open')));
+menuOverlay.addEventListener('click', () => toggleMenu(false));
+mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => toggleMenu(false)));
+
+// Scrollspy
+const sections = document.querySelectorAll('section[id]');
+const mobileLinks = mobileMenu.querySelectorAll('a[href^="#"]');
+const spy = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      mobileLinks.forEach(l => l.classList.remove('active'));
+      const active = document.querySelector(`#mobileMenu a[href="#${entry.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, {rootMargin:'-45% 0px -50% 0px'});
+sections.forEach(s => spy.observe(s));
+
+// Volver arriba
+const backTop = document.getElementById('backTop');
+const showBackTop = () => backTop.classList.toggle('show', window.scrollY > 400);
+window.addEventListener('scroll', showBackTop, {passive:true});
+backTop.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
+
+// Máquina de escribir
+const phrases = [
+  'Ponchado de redes de datos con precisión de experto.',
+  'Cables crimpados y certificados para máxima velocidad.',
+  'Conectividad estable para tu hogar o negocio.'
+];
+let phraseIdx = 0, charIdx = 0, deleting = false;
+const typedEl = document.getElementById('typedText');
+function typeLoop(){
+  const current = phrases[phraseIdx];
+  typedEl.textContent = deleting ? current.slice(0, charIdx--) : current.slice(0, ++charIdx);
+  let speed = deleting ? 30 : 55;
+  if(!deleting && charIdx === current.length){ speed = 1800; deleting = true; }
+  else if(deleting && charIdx === 0){ deleting = false; phraseIdx = (phraseIdx+1) % phrases.length; speed = 400; }
+  setTimeout(typeLoop, speed);
+}
+typeLoop();
+
+// Aparición al hacer scroll
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add('visible');
+  });
+}, {threshold: 0.12});
+document.querySelectorAll('.card, .step, .type-card, .video-card, .price-card, .faq-item').forEach((el, i) => {
+  el.style.transitionDelay = (i % 3) * 0.08 + 's';
+  observer.observe(el);
+});
+
+// Contadores
+const counterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const el = entry.target;
+      const target = parseInt(el.dataset.count || el.textContent.replace(/\D/g,''));
+      let current = 0;
+      const increment = Math.ceil(target / 50);
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) { current = target; clearInterval(timer); }
+        el.textContent = current + (target === 24 ? '/7' : '+');
+      }, 30);
+      counterObserver.unobserve(el);
+    }
+  });
+}, {threshold: 0.4});
+document.querySelectorAll('.stat h3').forEach(el => {
+  if(!el.dataset.count) el.dataset.count = el.textContent.replace(/\D/g,'');
+  counterObserver.observe(el);
+});
+
+// FAQ acordeón
+document.querySelectorAll('.faq-item').forEach(item => {
+  const btn = item.querySelector('.faq-q');
+  const answer = item.querySelector('.faq-a');
+  btn.addEventListener('click', () => {
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => {
+      i.classList.remove('open');
+      i.querySelector('.faq-a').style.maxHeight = null;
+    });
+    if(!isOpen){
+      item.classList.add('open');
+      answer.style.maxHeight = answer.scrollHeight + 'px';
+    }
+  });
+});
+</script>
+</body>
+</html>
